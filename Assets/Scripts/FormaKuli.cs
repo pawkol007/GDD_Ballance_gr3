@@ -45,15 +45,19 @@ public class FormaKuli : MonoBehaviour
     {
         odblokowane.Add(forma);
         UstawForme(forma);
+        Komunikat.Pokaz("Odblokowano: " + forma + "!");
     }
 
     private void ZmienForme(Forma forma)
     {
         if (odblokowane.Contains(forma) && forma != Aktualna)
+        {
             UstawForme(forma);
+            Komunikat.Pokaz("Forma: " + forma);
+        }
     }
 
-    private void UstawForme(Forma forma)
+    public void UstawForme(Forma forma)
     {
         Aktualna = forma;
         var mat = new PhysicsMaterial(forma.ToString());

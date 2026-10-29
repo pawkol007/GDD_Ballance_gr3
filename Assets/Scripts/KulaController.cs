@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class KulaController : MonoBehaviour
 {
     public float sila = 15f;      // siła pchania kuli
+    public float mnoznikSterowania = 1f;  // np. na lodzie mniejszy
     public Transform kamera;      // jeśli puste, bierze Main Camera
 
     private Rigidbody rb;
@@ -36,6 +37,6 @@ public class KulaController : MonoBehaviour
         Vector3 prawo = kamera.right;   prawo.y = 0; prawo.Normalize();
 
         Vector3 kierunek = (przod * wejscie.y + prawo * wejscie.x).normalized;
-        rb.AddForce(kierunek * sila, ForceMode.Force);
+        rb.AddForce(kierunek * sila * mnoznikSterowania, ForceMode.Force);
     }
 }
