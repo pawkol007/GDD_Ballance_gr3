@@ -3,27 +3,44 @@ using UnityEngine.InputSystem;
 
 public class KameraKuli : MonoBehaviour
 {
-    public Transform cel;               // kula
+    public Transform cel;
     public float odleglosc = 6f;
-    public float wysokosc = 3f;
-    public float predkoscObrotu = 120f; // stopnie na sekundę
-    public float wygladzanie = 8f;
+    public float czuloscMyszki = 0.5f;
 
-    private float kat;
+    // Ograniczenia wychylenia kamery w pionie (żeby nie wejść pod mapę lub nie zrobić salta)
+    public Vector2 limityY = new Vector2(-15f, 60f);
+
+    private float rotacjaX; // obrót lewo/prawo
+    private float rotacjaY; // obrót góra/dół
+
+    void Start()
+    {
+        // Blokuje kursor myszy na środku ekranu i go ukrywa
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
 
     void LateUpdate()
     {
         if (cel == null) return;
 
-        var k = Keyboard.current;
-        if (k != null)
+        var m = Mouse.current;
+        if (m != null)
         {
-            if (k.leftArrowKey.isPressed)  kat -= predkoscObrotu * Time.deltaTime;
-            if (k.rightArrowKey.isPressed) kat += predkoscObrotu * Time.deltaTime;
+            Vector2 ruchMyszki = m.delta.ReadValue();
+
+            rotacjaX += ruchMyszki.x * czuloscMyszki;
+            rotacjaY -= ruchMyszki.y * czuloscMyszki; // Minus odwraca oś Y, by sterowanie było naturalne
+
+            // Ograniczamy obrót góra/dół, żeby kamera nie przeszła przez bieguny
+            rotacjaY = Mathf.Clamp(rotacjaY, limityY.x, limityY.y);
         }
 
-        Vector3 docelowa = cel.position + Quaternion.Euler(0, kat, 0) * new Vector3(0, wysokosc, -odleglosc);
-        transform.position = Vector3.Lerp(transform.position, docelowa, wygladzanie * Time.deltaTime);
-        transform.LookAt(cel.position + Vector3.up * 0.5f);
+        // Obliczamy pozycję na sferze wokół kuli
+        Quaternion obrot = Quaternion.Euler(rotacjaY, rotacjaX, 0);
+        Vector3 docelowa = cel.position + obrot * new Vector3(0, 0, -odleglosc);
+
+        transform.position = docelowa;
+        transform.LookAt(cel.position);
     }
 }
