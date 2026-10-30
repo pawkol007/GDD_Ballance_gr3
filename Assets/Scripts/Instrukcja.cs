@@ -29,7 +29,9 @@ public class Instrukcja : MonoBehaviour
     {
         if (!widoczna) return;
 
-        float w = 620, h = 330;
+        float w = Screen.width - 120;
+        float h = Screen.height - 250;
+
         var okno = new Rect((Screen.width - w) / 2, (Screen.height - h) / 2, w, h);
         GUI.Box(okno, "");
         GUI.Box(okno, "");
